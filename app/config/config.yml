@@ -62,3 +62,43 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: Acme\UserBundle\Entity\User
+    
+sonata_block:
+    default_contexts: [cms]
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts:   [admin]
+
+        sonata.block.service.text:
+        sonata.block.service.action:
+        sonata.block.service.rss:
+          
+doctrine:
+    orm:
+        entity_managers:
+            default:
+                mappings:
+                    gedmo_translatable:
+                        type: annotation
+                        prefix: Gedmo\Translatable\Entity
+                        dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Entity"
+                        alias: GedmoTranslatable # this one is optional and will default to the name set for the mapping
+                        is_bundle: false
+                    gedmo_translator:
+                        type: annotation
+                        prefix: Gedmo\Translator\Entity
+                        dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translator/Entity"
+                        alias: GedmoTranslator # this one is optional and will default to the name set for the mapping
+                        is_bundle: false
+                    gedmo_loggable:
+                        type: annotation
+                        prefix: Gedmo\Loggable\Entity
+                        dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"
+                        alias: GedmoLoggable # this one is optional and will default to the name set for the mapping
+                        is_bundle: false
+                    gedmo_tree:
+                        type: annotation
+                        prefix: Gedmo\Tree\Entity
+                        dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Tree/Entity"
+                        alias: GedmoTree # this one is optional and will default to the name set for the mapping
+                        is_bundle: false
