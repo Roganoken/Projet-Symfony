@@ -21,10 +21,7 @@ return array(
     'JMS\\SecurityExtraBundle' => $vendorDir . '/jms/security-extra-bundle/',
     'JMS\\DiExtraBundle' => $vendorDir . '/jms/di-extra-bundle/',
     'JMS\\AopBundle' => $vendorDir . '/jms/aop-bundle/',
-<<<<<<< HEAD
     'FOS\\UserBundle' => $vendorDir . '/friendsofsymfony/user-bundle/',
-=======
->>>>>>> 3595fd77cc0121b0fdaf8c272bd400fb7ff0d686
     'Doctrine\\ORM' => $vendorDir . '/doctrine/orm/lib/',
     'Doctrine\\DBAL' => $vendorDir . '/doctrine/dbal/lib/',
     'Doctrine\\Common' => $vendorDir . '/doctrine/common/lib/',
