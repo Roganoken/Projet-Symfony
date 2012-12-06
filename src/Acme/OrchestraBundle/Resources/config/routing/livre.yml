@@ -1,0 +1,30 @@
+livre:
+    pattern:  /
+    defaults: { _controller: "AcmeOrchestraBundle:Livre:index" }
+
+livre_show:
+    pattern:  /{id}/show
+    defaults: { _controller: "AcmeOrchestraBundle:Livre:show" }
+
+livre_new:
+    pattern:  /new
+    defaults: { _controller: "AcmeOrchestraBundle:Livre:new" }
+
+livre_create:
+    pattern:  /create
+    defaults: { _controller: "AcmeOrchestraBundle:Livre:create" }
+    requirements: { _method: post }
+
+livre_edit:
+    pattern:  /{id}/edit
+    defaults: { _controller: "AcmeOrchestraBundle:Livre:edit" }
+
+livre_update:
+    pattern:  /{id}/update
+    defaults: { _controller: "AcmeOrchestraBundle:Livre:update" }
+    requirements: { _method: post }
+
+livre_delete:
+    pattern:  /{id}/delete
+    defaults: { _controller: "AcmeOrchestraBundle:Livre:delete" }
+    requirements: { _method: post }
