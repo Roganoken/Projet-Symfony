@@ -1,0 +1,1174 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
+DROP SCHEMA IF EXISTS `orchestra` ;
+CREATE SCHEMA IF NOT EXISTS `orchestra` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
+USE `orchestra` ;
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`country`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`country` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(64) NOT NULL ,
+  `full_name` VARCHAR(64) NOT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+AUTO_INCREMENT = 280
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`region`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`region` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `country_id` INT(11) UNSIGNED NOT NULL ,
+  `reg_num` VARCHAR(8) NOT NULL ,
+  `uc_name` VARCHAR(64) NOT NULL ,
+  `name` VARCHAR(64) NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_regions_countries1_idx` (`country_id` ASC) ,
+  CONSTRAINT `fk_regions_countries1`
+    FOREIGN KEY (`country_id` )
+    REFERENCES `orchestra`.`country` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 27
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`department`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`department` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `region_id` INT(11) UNSIGNED NOT NULL ,
+  `dept_num` VARCHAR(8) NOT NULL ,
+  `uc_name` VARCHAR(64) NOT NULL ,
+  `name` VARCHAR(64) NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_departments_regions1_idx` (`region_id` ASC) ,
+  CONSTRAINT `fk_departments_regions1`
+    FOREIGN KEY (`region_id` )
+    REFERENCES `orchestra`.`region` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 101
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`city`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`city` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `department_id` INT(11) UNSIGNED NOT NULL ,
+  `postal_code` VARCHAR(8) NOT NULL ,
+  `uc_art` VARCHAR(8) NULL DEFAULT NULL ,
+  `uc_name` VARCHAR(64) NOT NULL ,
+  `art` VARCHAR(8) NULL DEFAULT NULL ,
+  `name` VARCHAR(64) NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_cities_departments1_idx` (`department_id` ASC) ,
+  CONSTRAINT `fk_cities_departments1`
+    FOREIGN KEY (`department_id` )
+    REFERENCES `orchestra`.`department` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 37357
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`address`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`address` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `address1` VARCHAR(256) CHARACTER SET 'latin1' NOT NULL ,
+  `address2` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `address3` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `city_id` INT(11) UNSIGNED NOT NULL ,
+  `other` VARCHAR(4096) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `phone1` VARCHAR(16) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `phone2` VARCHAR(16) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `fax` VARCHAR(16) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
+  `is_deleted` TINYINT(1) NOT NULL DEFAULT '0' ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_addresses_cities1_idx` (`city_id` ASC) ,
+  CONSTRAINT `fk_addresses_cities1`
+    FOREIGN KEY (`city_id` )
+    REFERENCES `orchestra`.`city` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 294
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`legal`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`legal` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `description` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT 'Description en cours de rédaction.' ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`company`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`company` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) NOT NULL ,
+  `website` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `email` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `address_id` INT(10) UNSIGNED NULL DEFAULT NULL ,
+  `logo` INT(10) UNSIGNED NULL DEFAULT NULL ,
+  `legal_id` INT(10) UNSIGNED NULL DEFAULT NULL ,
+  `issue_date` DATE NULL DEFAULT NULL ,
+  `siret` VARCHAR(16) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `siren` VARCHAR(16) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `is_active` TINYINT(1) NOT NULL DEFAULT '1' ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_companies_legals1_idx` (`legal_id` ASC) ,
+  INDEX `fk_companies_addresses1_idx` (`address_id` ASC) ,
+  CONSTRAINT `fk_companies_addresses1`
+    FOREIGN KEY (`address_id` )
+    REFERENCES `orchestra`.`address` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_companies_legals1`
+    FOREIGN KEY (`legal_id` )
+    REFERENCES `orchestra`.`legal` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 294
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`sex`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`sex` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT ,
+  `gender` VARCHAR(16) CHARACTER SET 'latin1' NOT NULL ,
+  `title` VARCHAR(16) CHARACTER SET 'latin1' NOT NULL ,
+  `title_abbrev` VARCHAR(16) CHARACTER SET 'latin1' NOT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`user`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`user` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `firstname` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `lastname` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `username` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `password` VARCHAR(16) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `birthdate` DATE NULL DEFAULT NULL ,
+  `sex_id` INT(11) NOT NULL ,
+  `photo` INT(10) UNSIGNED NULL DEFAULT NULL ,
+  `email` VARCHAR(128) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `phone` VARCHAR(16) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `mobile_phone` VARCHAR(16) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `address_id` INT(10) UNSIGNED NULL DEFAULT NULL ,
+  `ldap` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `connected` DATETIME NOT NULL ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  `is_professeur` TINYINT(1) NOT NULL ,
+  `is_eleve` TINYINT(1) NOT NULL ,
+  `is_contact` TINYINT(1) NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  UNIQUE INDEX `username_UNIQUE` USING BTREE (`username`(128) ASC) ,
+  INDEX `fk_users_addresses1_idx` (`address_id` ASC) ,
+  INDEX `fk_user_sex1_idx` (`sex_id` ASC) ,
+  CONSTRAINT `fk_users_addresses1`
+    FOREIGN KEY (`address_id` )
+    REFERENCES `orchestra`.`address` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user_sex1`
+    FOREIGN KEY (`sex_id` )
+    REFERENCES `orchestra`.`sex` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 294
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`field`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`field` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `description` VARCHAR(16384) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`degree`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`degree` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `level` INT(11) NOT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`speciality`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`speciality` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `description` VARCHAR(16384) CHARACTER SET 'latin1' NULL DEFAULT 'Description en cours de rédaction.' ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`sector`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`sector` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `description` VARCHAR(1024) CHARACTER SET 'latin1' NULL DEFAULT 'Description en cours de rédaction.' ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`company_sector`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`company_sector` (
+  `company_id` INT UNSIGNED NOT NULL ,
+  `sector_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`company_id`, `sector_id`) ,
+  INDEX `fk_company_sector_sector1_idx` (`sector_id` ASC) ,
+  INDEX `fk_company_sector_company_idx` (`company_id` ASC) ,
+  CONSTRAINT `fk_company_sector_company`
+    FOREIGN KEY (`company_id` )
+    REFERENCES `orchestra`.`company` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_company_sector_sector1`
+    FOREIGN KEY (`sector_id` )
+    REFERENCES `orchestra`.`sector` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`contract`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`contract` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(64) CHARACTER SET 'latin1' NOT NULL ,
+  `abbreviation` VARCHAR(8) CHARACTER SET 'latin1' NOT NULL ,
+  `description` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`position`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`position` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `description` VARCHAR(1024) CHARACTER SET 'latin1' NULL DEFAULT 'Description en cours de rédaction.' ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`job`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`job` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `company_id` INT(10) UNSIGNED NOT NULL ,
+  `user_id` INT(10) UNSIGNED NOT NULL ,
+  `position_id` INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+  `contract_id` INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+  `started` DATE NULL DEFAULT NULL ,
+  `ended` DATE NULL DEFAULT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_company_student_student1_idx` (`user_id` ASC) ,
+  INDEX `fk_company_student_company1_idx` (`company_id` ASC) ,
+  INDEX `fk_works_positions1_idx` (`position_id` ASC) ,
+  INDEX `fk_jobs_contracts1_idx` (`contract_id` ASC) ,
+  CONSTRAINT `fk_company_student_company1`
+    FOREIGN KEY (`company_id` )
+    REFERENCES `orchestra`.`company` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_company_student_student1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_jobs_contracts1`
+    FOREIGN KEY (`contract_id` )
+    REFERENCES `orchestra`.`contract` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_works_positions1`
+    FOREIGN KEY (`position_id` )
+    REFERENCES `orchestra`.`position` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`internship`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`internship` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `company_id` INT UNSIGNED NOT NULL ,
+  `user_id` INT UNSIGNED NOT NULL ,
+  `started` DATE NOT NULL ,
+  `duration` INT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_companies_students_students1_idx` (`user_id` ASC) ,
+  INDEX `fk_companies_students_companies1_idx` (`company_id` ASC) ,
+  CONSTRAINT `fk_companies_students_companies1`
+    FOREIGN KEY (`company_id` )
+    REFERENCES `orchestra`.`company` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_companies_students_students1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`diploma`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`diploma` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `speciality_id` INT(10) UNSIGNED NOT NULL ,
+  `field_id` INT(10) UNSIGNED NOT NULL ,
+  `degree_id` INT(10) UNSIGNED NOT NULL ,
+  `full_name` VARCHAR(64) CHARACTER SET 'latin1' NOT NULL ,
+  `certification_name` VARCHAR(64) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `certification_date` DATE NULL DEFAULT NULL ,
+  `final` TINYINT(1) NOT NULL DEFAULT '0' ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_diplomas_specialities1_idx` (`speciality_id` ASC) ,
+  INDEX `fk_diplomas_fields1_idx` (`field_id` ASC) ,
+  INDEX `fk_diplomas_degrees1_idx` (`degree_id` ASC) ,
+  CONSTRAINT `fk_diplomas_degrees1`
+    FOREIGN KEY (`degree_id` )
+    REFERENCES `orchestra`.`degree` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_diplomas_fields1`
+    FOREIGN KEY (`field_id` )
+    REFERENCES `orchestra`.`field` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_diplomas_specialities1`
+    FOREIGN KEY (`speciality_id` )
+    REFERENCES `orchestra`.`speciality` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`diploma_user`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`diploma_user` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `diploma_id` INT UNSIGNED NOT NULL ,
+  `user_id` INT UNSIGNED NOT NULL ,
+  `issue_date` DATE NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_diplomas_students_students1_idx` (`user_id` ASC) ,
+  INDEX `fk_diplomas_students_diplomas1_idx` (`diploma_id` ASC) ,
+  CONSTRAINT `fk_diplomas_students_diplomas1`
+    FOREIGN KEY (`diploma_id` )
+    REFERENCES `orchestra`.`diploma` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_diplomas_students_students1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`job_offer`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`job_offer` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `company_id` INT(10) UNSIGNED NOT NULL ,
+  `title` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `description` VARCHAR(8182) CHARACTER SET 'latin1' NOT NULL DEFAULT 'Description en cours de rédaction.' ,
+  `contract_id` INT(10) UNSIGNED NOT NULL ,
+  `start` DATE NULL DEFAULT NULL ,
+  `duration` INT(11) NULL DEFAULT NULL ,
+  `remuneration` FLOAT(11) NULL DEFAULT '0' ,
+  `visits` INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+  `comment` VARCHAR(2048) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `active` TINYINT(1) NOT NULL DEFAULT '1' ,
+  `deleted` TINYINT(1) NOT NULL DEFAULT '0' ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_internship_offer_company1` (`company_id` ASC) ,
+  INDEX `fk_job_offers_contracts1_idx` (`contract_id` ASC) ,
+  CONSTRAINT `fk_internship_offer_company10`
+    FOREIGN KEY (`company_id` )
+    REFERENCES `orchestra`.`company` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_job_offers_contracts1`
+    FOREIGN KEY (`contract_id` )
+    REFERENCES `orchestra`.`contract` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`social_network`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`social_network` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(32) CHARACTER SET 'latin1' NOT NULL ,
+  `url` VARCHAR(256) CHARACTER SET 'latin1' NOT NULL ,
+  `base_url` VARCHAR(256) CHARACTER SET 'latin1' NOT NULL ,
+  `share_url` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `logo` VARCHAR(45) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`social_network_user`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`social_network_user` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `social_network_id` INT(10) UNSIGNED NOT NULL ,
+  `user_id` INT(10) UNSIGNED NOT NULL ,
+  `url` VARCHAR(256) CHARACTER SET 'latin1' NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_social_networks_students_students1_idx` (`user_id` ASC) ,
+  INDEX `fk_social_networks_students_social_networks1_idx` (`social_network_id` ASC) ,
+  CONSTRAINT `fk_social_networks_students_social_networks1`
+    FOREIGN KEY (`social_network_id` )
+    REFERENCES `orchestra`.`social_network` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_social_networks_students_students1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`diploma_job_offer`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`diploma_job_offer` (
+  `diploma_id` INT UNSIGNED NOT NULL ,
+  `job_offers_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`diploma_id`, `job_offers_id`) ,
+  INDEX `fk_diplomas_job_offers_job_offers1_idx` (`job_offers_id` ASC) ,
+  INDEX `fk_diplomas_job_offers_diplomas1_idx` (`diploma_id` ASC) ,
+  CONSTRAINT `fk_diplomas_job_offers_diplomas1`
+    FOREIGN KEY (`diploma_id` )
+    REFERENCES `orchestra`.`diploma` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_diplomas_job_offers_job_offers1`
+    FOREIGN KEY (`job_offers_id` )
+    REFERENCES `orchestra`.`job_offer` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`company_user`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`company_user` (
+  `company_id` INT UNSIGNED NOT NULL ,
+  `user_id` INT UNSIGNED NOT NULL ,
+  `is_supervisor` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `is_manager` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `is_contact` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `visible` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `mailable` TINYINT(1) NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (`company_id`, `user_id`) ,
+  INDEX `fk_companies_users_users1_idx` (`user_id` ASC) ,
+  INDEX `fk_companies_users_companies1_idx` (`company_id` ASC) ,
+  CONSTRAINT `fk_companies_users_companies1`
+    FOREIGN KEY (`company_id` )
+    REFERENCES `orchestra`.`company` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_companies_users_users1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`position_user`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`position_user` (
+  `position_id` INT UNSIGNED NOT NULL ,
+  `user_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`position_id`, `user_id`) ,
+  INDEX `fk_positions_users_users1_idx` (`user_id` ASC) ,
+  INDEX `fk_positions_users_positions1_idx` (`position_id` ASC) ,
+  CONSTRAINT `fk_positions_users_positions1`
+    FOREIGN KEY (`position_id` )
+    REFERENCES `orchestra`.`position` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_positions_users_users1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`course`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`course` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(64) CHARACTER SET 'latin1' NOT NULL ,
+  `full_name` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `description` VARCHAR(2048) CHARACTER SET 'latin1' NOT NULL ,
+  `exam` VARCHAR(512) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `program` TEXT CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  `duration` INT(11) NULL DEFAULT NULL ,
+  `start` DATETIME NULL DEFAULT NULL ,
+  `end` DATETIME NULL DEFAULT NULL ,
+  `coefficient` INT(11) NULL DEFAULT NULL ,
+  `is_qualifying` TINYINT(1) NOT NULL DEFAULT '0' ,
+  `is_fede` TINYINT(1) NOT NULL DEFAULT '0' ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`course_user`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`course_user` (
+  `course_id` INT UNSIGNED NOT NULL ,
+  `user_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`course_id`, `user_id`) ,
+  INDEX `fk_course_user_user1_idx` (`user_id` ASC) ,
+  INDEX `fk_course_user_course1_idx` (`course_id` ASC) ,
+  CONSTRAINT `fk_course_user_course1`
+    FOREIGN KEY (`course_id` )
+    REFERENCES `orchestra`.`course` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_course_user_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`course_diploma`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`course_diploma` (
+  `course_id` INT UNSIGNED NOT NULL ,
+  `diploma_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`course_id`, `diploma_id`) ,
+  INDEX `fk_course_diploma_diploma1_idx` (`diploma_id` ASC) ,
+  INDEX `fk_course_diploma_course1_idx` (`course_id` ASC) ,
+  CONSTRAINT `fk_course_diploma_course1`
+    FOREIGN KEY (`course_id` )
+    REFERENCES `orchestra`.`course` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_course_diploma_diploma1`
+    FOREIGN KEY (`diploma_id` )
+    REFERENCES `orchestra`.`diploma` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`access`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`access` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(16) CHARACTER SET 'latin1' NOT NULL ,
+  `description` VARCHAR(256) CHARACTER SET 'latin1' NULL DEFAULT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+AUTO_INCREMENT = 2
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`access_user`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`access_user` (
+  `access_id` INT UNSIGNED NOT NULL ,
+  `user_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`access_id`, `user_id`) ,
+  INDEX `fk_access_user_user1_idx` (`user_id` ASC) ,
+  INDEX `fk_access_user_access1_idx` (`access_id` ASC) ,
+  CONSTRAINT `fk_access_user_access1`
+    FOREIGN KEY (`access_id` )
+    REFERENCES `orchestra`.`access` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_access_user_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`company_field`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`company_field` (
+  `company_id` INT UNSIGNED NOT NULL ,
+  `field_id` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`company_id`, `field_id`) ,
+  INDEX `fk_company_field_field1_idx` (`field_id` ASC) ,
+  INDEX `fk_company_field_company1_idx` (`company_id` ASC) ,
+  CONSTRAINT `fk_company_field_company1`
+    FOREIGN KEY (`company_id` )
+    REFERENCES `orchestra`.`company` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_company_field_field1`
+    FOREIGN KEY (`field_id` )
+    REFERENCES `orchestra`.`field` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`section`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`section` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(16) NULL ,
+  `description` VARCHAR(1024) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`news`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`news` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `section_id` INT UNSIGNED NOT NULL ,
+  `title` VARCHAR(64) NOT NULL ,
+  `content` VARCHAR(1024) NOT NULL ,
+  `active` TINYINT(1) NOT NULL DEFAULT 1 ,
+  `user_id` INT UNSIGNED NULL ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_news_section1_idx` (`section_id` ASC) ,
+  INDEX `fk_news_user1_idx` (`user_id` ASC) ,
+  CONSTRAINT `fk_news_section1`
+    FOREIGN KEY (`section_id` )
+    REFERENCES `orchestra`.`section` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_news_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`media`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`media` (
+  `id` INT NOT NULL ,
+  `intitule` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`image`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`image` (
+  `id` INT NOT NULL ,
+  `titre` VARCHAR(45) NULL ,
+  `descriptif` TEXT NULL ,
+  `date_creation` DATE NULL ,
+  `url` VARCHAR(45) NULL ,
+  `taille` VARCHAR(45) NULL ,
+  `poids` VARCHAR(45) NULL ,
+  `logiciel` VARCHAR(45) NULL ,
+  `mot_cle` VARCHAR(45) NULL ,
+  `created` VARCHAR(45) NOT NULL ,
+  `updated` VARCHAR(45) NOT NULL ,
+  `media_id` INT NOT NULL ,
+  `is_portfolio` TINYINT(1) NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_image_media1_idx` (`media_id` ASC) ,
+  CONSTRAINT `fk_image_media1`
+    FOREIGN KEY (`media_id` )
+    REFERENCES `orchestra`.`media` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`user_has_image`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`user_has_image` (
+  `user_id` INT(10) UNSIGNED NOT NULL ,
+  `image_id` INT NOT NULL ,
+  PRIMARY KEY (`user_id`, `image_id`) ,
+  INDEX `fk_user_image_image1_idx` (`image_id` ASC) ,
+  INDEX `fk_user_image_user1_idx` (`user_id` ASC) ,
+  CONSTRAINT `fk_user_image_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user_image_image1`
+    FOREIGN KEY (`image_id` )
+    REFERENCES `orchestra`.`image` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`galerie`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`galerie` (
+  `id` INT NOT NULL ,
+  `parent_id` INT NULL ,
+  `media_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_galerie_media1_idx` (`media_id` ASC) ,
+  CONSTRAINT `fk_galerie_media1`
+    FOREIGN KEY (`media_id` )
+    REFERENCES `orchestra`.`media` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`salle`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`salle` (
+  `id` INT NOT NULL ,
+  `numero` VARCHAR(45) NULL ,
+  `capacite` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`module`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`module` (
+  `id` INT NOT NULL ,
+  `intitule` VARCHAR(45) NULL ,
+  `date` DATE NULL ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  `user_id` INT(10) UNSIGNED NOT NULL ,
+  `salle_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_module_user1_idx` (`user_id` ASC) ,
+  INDEX `fk_module_salle1_idx` (`salle_id` ASC) ,
+  CONSTRAINT `fk_module_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_module_salle1`
+    FOREIGN KEY (`salle_id` )
+    REFERENCES `orchestra`.`salle` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`user_module`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`user_module` (
+  `user_id` INT(10) UNSIGNED NOT NULL ,
+  `module_id` INT NOT NULL ,
+  PRIMARY KEY (`user_id`, `module_id`) ,
+  INDEX `fk_user_module_module1_idx` (`module_id` ASC) ,
+  INDEX `fk_user_module_user1_idx` (`user_id` ASC) ,
+  CONSTRAINT `fk_user_module_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user_module_module1`
+    FOREIGN KEY (`module_id` )
+    REFERENCES `orchestra`.`module` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`salle_course`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`salle_course` (
+  `salle_id` INT NOT NULL ,
+  `course_id` INT(10) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`salle_id`, `course_id`) ,
+  INDEX `fk_salle_course_course1_idx` (`course_id` ASC) ,
+  INDEX `fk_salle_course_salle1_idx` (`salle_id` ASC) ,
+  CONSTRAINT `fk_salle_course_salle1`
+    FOREIGN KEY (`salle_id` )
+    REFERENCES `orchestra`.`salle` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_salle_course_course1`
+    FOREIGN KEY (`course_id` )
+    REFERENCES `orchestra`.`course` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`commentaire`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`commentaire` (
+  `id` INT NOT NULL ,
+  `contenu` TEXT NULL ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  `user_id` INT(10) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_commentaire_user1` (`user_id` ASC) ,
+  CONSTRAINT `fk_commentaire_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`image_commentaire`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`image_commentaire` (
+  `image_id` INT NOT NULL ,
+  `commentaire_id` INT NOT NULL ,
+  PRIMARY KEY (`image_id`, `commentaire_id`) ,
+  INDEX `fk_image_commentaire_commentaire1` (`commentaire_id` ASC) ,
+  INDEX `fk_image_commentaire_image1` (`image_id` ASC) ,
+  CONSTRAINT `fk_image_commentaire_image1`
+    FOREIGN KEY (`image_id` )
+    REFERENCES `orchestra`.`image` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_image_commentaire_commentaire1`
+    FOREIGN KEY (`commentaire_id` )
+    REFERENCES `orchestra`.`commentaire` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`news_commentaire`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`news_commentaire` (
+  `news_id` INT UNSIGNED NOT NULL ,
+  `commentaire_id` INT NOT NULL ,
+  PRIMARY KEY (`news_id`, `commentaire_id`) ,
+  INDEX `fk_news_commentaire_commentaire1` (`commentaire_id` ASC) ,
+  INDEX `fk_news_commentaire_news1` (`news_id` ASC) ,
+  CONSTRAINT `fk_news_commentaire_news1`
+    FOREIGN KEY (`news_id` )
+    REFERENCES `orchestra`.`news` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_news_commentaire_commentaire1`
+    FOREIGN KEY (`commentaire_id` )
+    REFERENCES `orchestra`.`commentaire` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`auteur`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`auteur` (
+  `id` INT NOT NULL ,
+  `nom` VARCHAR(45) NULL ,
+  `prenom` VARCHAR(45) NULL ,
+  `date_naissance` DATE NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`genre`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`genre` (
+  `id` INT NOT NULL ,
+  `libelle` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`livre`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`livre` (
+  `id` INT NOT NULL ,
+  `isbn` VARCHAR(45) NULL ,
+  `titre` VARCHAR(45) NULL ,
+  `resume` VARCHAR(45) NULL ,
+  `annee` DATE NULL ,
+  `illustration` VARCHAR(45) NULL ,
+  `date_reservation` VARCHAR(45) NULL ,
+  `date_emprunt` VARCHAR(45) NULL ,
+  `date_retour` VARCHAR(45) NULL ,
+  `code_barre` VARCHAR(45) NULL ,
+  `active` TINYINT(1) NOT NULL ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  `auteur_id` INT NOT NULL ,
+  `genre_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_livre_auteur1` (`auteur_id` ASC) ,
+  INDEX `fk_livre_genre1` (`genre_id` ASC) ,
+  CONSTRAINT `fk_livre_auteur1`
+    FOREIGN KEY (`auteur_id` )
+    REFERENCES `orchestra`.`auteur` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_livre_genre1`
+    FOREIGN KEY (`genre_id` )
+    REFERENCES `orchestra`.`genre` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`livre_commentaire`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`livre_commentaire` (
+  `livre_id` INT NOT NULL ,
+  `commentaire_id` INT NOT NULL ,
+  PRIMARY KEY (`livre_id`, `commentaire_id`) ,
+  INDEX `fk_livre_commentaire_commentaire1` (`commentaire_id` ASC) ,
+  INDEX `fk_livre_commentaire_livre1` (`livre_id` ASC) ,
+  CONSTRAINT `fk_livre_commentaire_livre1`
+    FOREIGN KEY (`livre_id` )
+    REFERENCES `orchestra`.`livre` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_livre_commentaire_commentaire1`
+    FOREIGN KEY (`commentaire_id` )
+    REFERENCES `orchestra`.`commentaire` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`user_livre`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`user_livre` (
+  `user_id` INT(10) UNSIGNED NOT NULL ,
+  `livre_id` INT NOT NULL ,
+  PRIMARY KEY (`user_id`, `livre_id`) ,
+  INDEX `fk_user_livre_livre1` (`livre_id` ASC) ,
+  INDEX `fk_user_livre_user1` (`user_id` ASC) ,
+  CONSTRAINT `fk_user_livre_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user_livre_livre1`
+    FOREIGN KEY (`livre_id` )
+    REFERENCES `orchestra`.`livre` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`sondage`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`sondage` (
+  `id` INT NOT NULL ,
+  `titre` VARCHAR(45) NULL ,
+  `created` DATETIME NOT NULL ,
+  `updated` DATETIME NOT NULL ,
+  `active` TINYINT(1) NOT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`question`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`question` (
+  `id` INT NOT NULL ,
+  `question` VARCHAR(45) NULL ,
+  `sondage_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_question_sondage1` (`sondage_id` ASC) ,
+  CONSTRAINT `fk_question_sondage1`
+    FOREIGN KEY (`sondage_id` )
+    REFERENCES `orchestra`.`sondage` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`reponse`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`reponse` (
+  `id` INT NOT NULL ,
+  `question_id` INT NOT NULL ,
+  `reponse` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_reponse_question1` (`question_id` ASC) ,
+  CONSTRAINT `fk_reponse_question1`
+    FOREIGN KEY (`question_id` )
+    REFERENCES `orchestra`.`question` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `orchestra`.`reponse_question`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `orchestra`.`reponse_question` (
+  `reponse_id` INT NOT NULL ,
+  `question_id` INT NOT NULL ,
+  `user_id` INT(10) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`reponse_id`, `question_id`) ,
+  INDEX `fk_reponse_question_question1` (`question_id` ASC) ,
+  INDEX `fk_reponse_question_reponse1` (`reponse_id` ASC) ,
+  INDEX `fk_reponse_question_user1` (`user_id` ASC) ,
+  CONSTRAINT `fk_reponse_question_reponse1`
+    FOREIGN KEY (`reponse_id` )
+    REFERENCES `orchestra`.`reponse` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_reponse_question_question1`
+    FOREIGN KEY (`question_id` )
+    REFERENCES `orchestra`.`question` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_reponse_question_user1`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `orchestra`.`user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
