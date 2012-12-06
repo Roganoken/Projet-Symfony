@@ -1,7 +1,0 @@
-parameters:
-#    acme_library.example.class: Acme\LibraryBundle\Example
-
-services:
-#    acme_library.example:
-#        class: %acme_library.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
