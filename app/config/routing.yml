@@ -1,5 +1,13 @@
-acme_library:
-    resource: "@AcmeLibraryBundle/Resources/config/routing.yml"
+AcmeOrchestraBundle_auteur:
+    resource: "@AcmeOrchestraBundle/Resources/config/routing/auteur.yml"
+    prefix:   /auteur
+
+AcmeOrchestraBundle_livre:
+    resource: "@AcmeOrchestraBundle/Resources/config/routing/livre.yml"
+    prefix:   /livre
+    
+acme_orchestra:
+    resource: "@AcmeOrchestraBundle/Resources/config/routing.yml"
     prefix:   /
 
 acme_user:
